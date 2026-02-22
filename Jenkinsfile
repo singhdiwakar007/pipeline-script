@@ -1,12 +1,17 @@
 pipeline {
   agent any
   stages {
-    stage('Clone Info') {
+    stage('pull stage') {
       steps {
-        echo "repo cloned succesfully!" 
-        sh 'ls -la'
+       git branch: 'main', url: 'https://github.com/shubhamkalsait/EasyCRUD.git'
       }
     }
+    stage('build stage') {
+      steps {
+        sh '''cd backend
+        mvn clean package -DskipTests'''
+      }
+    } 
   }
 }
         
