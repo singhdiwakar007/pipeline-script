@@ -23,8 +23,15 @@ pipeline {
         }
     }
 }
+    stage('quality gate') {
+      steps{
+        timeout(10) {
+        waitForQualityGate abortPipeline: true
   }
     }
+    }
+  }
+}
 
         
       
