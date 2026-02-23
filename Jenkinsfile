@@ -13,7 +13,7 @@ pipeline {
            mvn clean package -DskipTests'''
       }
     } 
-   stage('SonarQube Analysis') {
+   stage('testing') {
     steps {
         dir('backend') {
             // 'sonar-server' is the Name you gave in Jenkins System settings
