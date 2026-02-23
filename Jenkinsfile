@@ -13,19 +13,18 @@ pipeline {
            mvn clean package -DskipTests'''
       }
     } 
-    stage('test stage') {
-      steps {
-        sh '''
-           cd backend
-           mvn sonar:sonar \
-           -Dsonar.projectKey=my-app \
-           -Dsonar.projectName='my-app' \
-           -Dsonar.host.url=http://18.234.108.129:9000 \
-           -Dsonar.token=sqp_0080b2c50d2042d47bcd4510d4cbde2422b17670'''
+   stage('SonarQube Analysis') {
+    steps {
+        dir('backend') {
+            // 'sonar-server' is the Name you gave in Jenkins System settings
+            withSonarQubeEnv('sonar-server') { 
+                sh "mvn sonar:sonar -Dsonar.projectKey=my-app"
+            }
+        }
+    }
+}
   }
     }
-  }
-}
 
         
       
