@@ -17,11 +17,11 @@ pipeline {
       steps {
         sh '''
            cd backend
-           mvn clean verify sonar:sonar \
-  -Dsonar.projectKey=my-app \
-  -Dsonar.projectName='my-app' \
-  -Dsonar.host.url=http://18.234.108.129:9000 \
-  -Dsonar.token=sqp_0080b2c50d2042d47bcd4510d4cbde2422b17670
+           mvn sonar:sonar \
+           -Dsonar.projectKey=my-app \
+           -Dsonar.projectName='my-app' \
+           -Dsonar.host.url=http://18.234.108.129:9000 \
+           -Dsonar.token=sqp_0080b2c50d2042d47bcd4510d4cbde2422b17670
   }
     }
   }
