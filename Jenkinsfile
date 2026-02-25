@@ -30,6 +30,14 @@ pipeline {
   }
     }
     }
+       stage('delivery of artifect to s3') {
+         steps {
+           dir('backend') {
+             sh '''
+                 aws s3 cp target/*.jar  s3://java-artifect-bkt'''
+           }
+         }
+       }
   }
 }
 
