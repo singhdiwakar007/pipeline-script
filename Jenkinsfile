@@ -1,36 +1,70 @@
 pipeline {
     agent any
 
+    parameters {
+        // This adds the dropdown menu to your Jenkins job
+        choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Select apply to create or destroy to remove resources')
+    }
+
     stages {
-        stage('pull') {
+        stage('Pull') {
             steps {
                 git branch: 'main', url: 'https://github.com/singhdiwakar007/terraform-eks-infra.git'
             }
         }
+
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+
         stage('PLAN') {
             steps {
-               sh '''terraform init
-                     terraform plan'''
+                // Shows what will happen based on your choice
+                script {
+                    if (params.ACTION == 'apply') {
+                        sh 'terraform plan'
+                    } else {
+                        sh 'terraform plan -destroy'
+                    }
+                }
             }
         }
+
         stage('APPROVE') {
             steps {
-                timeout(10) {
-                    input message: 'ALL GOOD?' , ok: "Approve"
-                }               
+                // Pipeline will pause here for 10 minutes for your confirmation
+                timeout(time: 10, unit: 'MINUTES') {
+                    input message: "Are you sure you want to ${params.ACTION}?", ok: "Proceed"
+                }
             }
         }
-        stage('APPLY') {
+
+        stage('Terraform Action') {
             steps {
-              sh 'terraform apply --auto-approve'
+                script {
+                    if (params.ACTION == 'apply') {
+                        echo "🚀 Executing Terraform Apply..."
+                        sh 'terraform apply --auto-approve'
+                    } else {
+                        echo "⚠️ Executing Terraform Destroy..."
+                        sh 'terraform destroy --auto-approve'
+                    }
+                }
             }
         }
-        stage('deploy') {
+
+        stage('Deploy/Finish') {
             steps {
-               sh 'echo "Deploy success"'
+                script {
+                    if (params.ACTION == 'apply') {
+                        sh 'echo "EKS Cluster Deploy Success"'
+                    } else {
+                        sh 'echo "EKS Cluster Destroy Success"'
+                    }
+                }
             }
         }
     }
 }
-        
-      
