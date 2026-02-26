@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('pull') {
             steps {
-                git branch: 'main', url: 'https://github.com/SanjayTomar22/devops-b34.git'
+                git branch: 'main', url: 'https://github.com/singhdiwakar007/terraform-eks-infra.git'
             }
         }
         stage('PLAN') {
