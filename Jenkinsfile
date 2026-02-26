@@ -1,70 +1,43 @@
+
+
 pipeline {
     agent any
-
-    parameters {
-        // This adds the dropdown menu to your Jenkins job
-        choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Select apply to create or destroy to remove resources')
-    }
-
+    
     stages {
-        stage('Pull') {
+        
+        stage ('Git-Pull') {
             steps {
-                git branch: 'main', url: 'https://github.com/singhdiwakar007/terraform-eks-infra.git'
+                git branch: 'devops', url: 'https://github.com/SanjayTomar22/EasyCRUD.git'
             }
         }
-
-        stage('Terraform Init') {
+         stage ("Docker--Backend-Build") {
             steps {
-                sh 'terraform init'
+                sh '''
+                cd backend
+                docker build -t kubesanjay/easy-backend:latest .'''
             }
         }
-
-        stage('PLAN') {
+        stage ("Docker-Frontend-Build") {
             steps {
-                // Shows what will happen based on your choice
-                script {
-                    if (params.ACTION == 'apply') {
-                        sh 'terraform plan'
-                    } else {
-                        sh 'terraform plan -destroy'
-                    }
-                }
+                sh '''
+                pwd
+                cd frontend
+                docker build -t kubesanjay/easy-frontend:latest .'''
             }
         }
-
-        stage('APPROVE') {
+         stage ("Docker-Push") {
             steps {
-                // Pipeline will pause here for 10 minutes for your confirmation
-                timeout(time: 10, unit: 'MINUTES') {
-                    input message: "Are you sure you want to ${params.ACTION}?", ok: "Proceed"
-                }
+               sh '''
+                docker push kubesanjay/easy-backend:latest
+                docker push kubesanjay/easy-frontend:latest '''
             }
         }
-
-        stage('Terraform Action') {
+         stage ("Deploy") {
             steps {
-                script {
-                    if (params.ACTION == 'apply') {
-                        echo "🚀 Executing Terraform Apply..."
-                        sh 'terraform apply --auto-approve'
-                    } else {
-                        echo "⚠️ Executing Terraform Destroy..."
-                        sh 'terraform destroy --auto-approve'
-                    }
-                }
+                sh 'kubectl apply -f simple-deploy/. '
             }
         }
-
-        stage('Deploy/Finish') {
-            steps {
-                script {
-                    if (params.ACTION == 'apply') {
-                        sh 'echo "EKS Cluster Deploy Success"'
-                    } else {
-                        sh 'echo "EKS Cluster Destroy Success"'
-                    }
-                }
-            }
-        }
+        
     }
+    
 }
