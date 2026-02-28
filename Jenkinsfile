@@ -7,7 +7,7 @@ pipeline {
         
         stage ('Git-Pull') {
             steps {
-                git branch: 'devops', url: 'https://github.com/SanjayTomar22/EasyCRUD.git'
+                git branch: 'devops', url: 'https://github.com/singhdiwakar007/eks-deployment.git'
             }
         }
          stage ("Docker--Backend-Build") {
