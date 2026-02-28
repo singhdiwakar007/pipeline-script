@@ -32,19 +32,19 @@ pipeline {
                 docker push diwakar2010/easy-frontend '''
             }
         }
-         stage ("Deploy") {
+        stage ("Deploy to EKS") {
             steps {
                 script {
-                    // This unsets the variables causing the "HTML/Login" error
+                    // This unsets the variables that cause the Jenkins HTML error
                     withEnv(["KUBERNETES_SERVICE_HOST=", "KUBERNETES_SERVICE_PORT="]) {
                         sh '''
-                        # 1. Refresh the connection to your specific EKS cluster
-                        aws eks update-kubeconfig --region us-east-1 --name your-cluster-name
+                        # 1. Update context with your REAL cluster name
+                        aws eks update-kubeconfig --region us-east-1 --name b34-cluster
                         
-                        # 2. Apply your manifests
+                        # 2. Apply your manifests from the simple-deploy folder
                         kubectl apply -f simple-deploy/
                         
-                        # 3. Verify the pods are starting
+                        # 3. Check if the pods are creating
                         kubectl get pods
                         '''
                     }
