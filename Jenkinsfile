@@ -14,7 +14,7 @@ pipeline {
             steps {
                 sh '''
                 cd backend
-                docker build -t diwakar2010/easy-backend .'''
+                docker build -t diwakar2010/easy-backend . '''
             }
         }
         stage ("Docker-Frontend-Build") {
@@ -22,7 +22,7 @@ pipeline {
                 sh '''
                 pwd
                 cd frontend
-                docker build -t diwakar2010/easy-frontend .'''
+                docker build -t diwakar2010/easy-frontend . '''
             }
         }
          stage ("Docker-Push") {
