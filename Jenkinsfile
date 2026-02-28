@@ -33,10 +33,20 @@ pipeline {
             }
         }
          stage ("Deploy") {
-            steps {
-                sh 'kubectl apply -f simple-deploy/. '
-            }
-        }
+    steps {
+        sh '''
+        # Unset any proxy that might be redirecting kubectl to Jenkins
+        unset http_proxy
+        unset https_proxy
+        
+        # Ensure the jenkins user has the latest cluster context
+        aws eks update-kubeconfig --region us-east-1 --name your-cluster-name
+        
+        # Run the apply command
+        kubectl apply -f simple-deploy/
+        '''
+    }
+}
         
     }
     
