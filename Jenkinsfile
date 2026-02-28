@@ -33,20 +33,24 @@ pipeline {
             }
         }
          stage ("Deploy") {
-    steps {
-        sh '''
-        # Unset any proxy that might be redirecting kubectl to Jenkins
-        unset http_proxy
-        unset https_proxy
-        
-        # Ensure the jenkins user has the latest cluster context
-        aws eks update-kubeconfig --region us-east-1 --name your-cluster-name
-        
-        # Run the apply command
-        kubectl apply -f simple-deploy/
-        '''
-    }
-}
+            steps {
+                script {
+                    // This unsets the variables causing the "HTML/Login" error
+                    withEnv(["KUBERNETES_SERVICE_HOST=", "KUBERNETES_SERVICE_PORT="]) {
+                        sh '''
+                        # 1. Refresh the connection to your specific EKS cluster
+                        aws eks update-kubeconfig --region us-east-1 --name your-cluster-name
+                        
+                        # 2. Apply your manifests
+                        kubectl apply -f simple-deploy/
+                        
+                        # 3. Verify the pods are starting
+                        kubectl get pods
+                        '''
+                    }
+                }
+            }
+        }
         
     }
     
