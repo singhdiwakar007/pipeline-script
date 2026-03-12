@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Pull') {
             steps {
-                git branch: 'main', url: 'https://github.com/singhdiwakar007/terraform-eks-infra.git'
+                git branch: 'main', url: 'https://github.com/diwakarfoujdar/terraform-eks-infra.git'
             }
         }
 
